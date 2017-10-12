@@ -11,7 +11,15 @@
 
 " Use Vim settings, rather then Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
+
+if has('win32')
+  " use `.vim` instead of `vimfiles`
+  set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+endif
+
 set nocompatible
+
+colorscheme slate
 
 set nocindent
 set bs=2    " allow backspacing over everything in insert mode
@@ -48,14 +56,14 @@ endfunction
 
 function MyClojure()
   call MyTabs(2)
-  colorscheme desert
+	colorscheme slate
   setfiletype clojure
   map <F12> <ESC>0i;;<ESC>j
 endfunction
 
 function MyGroovy()
   call MyTabs(4)
-  colorscheme desert
+	colorscheme slate
   map <F12> <ESC>0i//<ESC>j
 endfunction
 
@@ -66,7 +74,7 @@ endfunction
 
 function MyProtobuf()
   call MyTabs(4)
-  colorscheme desert
+	colorscheme slate
   set ts=3 sw=3 et
   setfiletype cpp
 endfunction
@@ -74,20 +82,20 @@ endfunction
 function MyDefault()
   call MyTabs(2)
   set hlsearch is backspace=indent,eol,start
-  colorscheme desert
+	colorscheme slate
 endfunction
 
 function MyJava()
   call MyTabs(4)
   map <F12> <ESC>0i//<ESC>j
   map <F4> <ESC>O<ESC>i//-----------------------------------------------------------------------------<ESC>
-  colorscheme desert
   let java_allow_cpp_keywords=0
+	colorscheme slate
 endfunction
 
 function MyJavascript()
   call MyTabs(2)
-  colorscheme desert
+	colorscheme slate
   set syntax=javascript
   let java_allow_cpp_keywords=0
 endfunction
@@ -96,107 +104,117 @@ function MyPython()
   call MyTabs(2)
   map <F12> <ESC>0i#<ESC>j
   map <F4> <ESC>O<ESC>i#==============================================================================<ESC>
-  colorscheme desert
+	colorscheme slate
 endfunction
 
 function MyXML()
   call MyTabs(2)
-  colorscheme darkblue
+	colorscheme slate
 endfunction
 
 function MyVimrc()
   call MyTabs(2)
-  colorscheme desert
 endfunction
+
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
- " In text files, always limit the width of text to 78 characters
- autocmd BufRead *.* set tw=80
- autocmd BufEnter *.* colorscheme desert
- autocmd Bufenter *.xml colorscheme darkblue
+	" Autocommands
+	"-----------------------------------------------
+	"autocmd BufEnter *.* setlocal indentexpr= 
+	autocmd BufNewFile,BufEnter .vimrc call MyVimrc()
+	autocmd BufNewFile,BufEnter *.xml call MyXML()
+	autocmd BufNewFile,BufEnter *.java call MyJava()
+	autocmd BufNewFile,BufEnter *.js call MyJavascript()
+	autocmd BufNewFile,BufEnter *.py call MyPython()
+	autocmd BufNewFile,BufEnter *.groovy call MyGroovy()
+	autocmd BufNewFile,BufEnter *.gradle call MyGradle()
+	autocmd BufNewFile,BufEnter *.proto call MyProtobuf()
+
+  " In text files, always limit the width of text to 78 characters
+  autocmd BufRead *.* set tw=78
+  
+  augroup cprog
+    " Remove all cprog autocommands
+    au!
+  
+    " When starting to edit a file:
+    "   For C and C++ files set formatting of comments and set C-indenting on.
+    "   For other files switch it off.
+    "   Don't change the order, it's important that the line with * comes first.
+    autocmd FileType *      set formatoptions=tcql nocindent comments&
+    autocmd FileType c,cpp  set formatoptions=croql nocindent comments=sr:/*,mb:*,el:*/,://
+  augroup END
  
- augroup cprog
-  " Remove all cprog autocommands
-  au!
-
-  " When starting to edit a file:
-  "   For C and C++ files set formatting of comments and set C-indenting on.
-  "   For other files switch it off.
-  "   Don't change the order, it's important that the line with * comes first.
-  autocmd FileType *      set formatoptions=tcql nocindent comments&
-  autocmd FileType c,cpp  set formatoptions=croql nocindent comments=sr:/*,mb:*,el:*/,://
- augroup END
-
- augroup gzip
-  " Remove all gzip autocommands
-  au!
-
-  " Enable editing of gzipped files
-  " set binary mode before reading the file
-  autocmd BufReadPre,FileReadPre  *.gz,*.bz2 set bin
-  autocmd BufReadPost,FileReadPost  *.gz call GZIP_read("gunzip")
-  autocmd BufReadPost,FileReadPost  *.bz2 call GZIP_read("bunzip2")
-  autocmd BufWritePost,FileWritePost  *.gz call GZIP_write("gzip")
-  autocmd BufWritePost,FileWritePost  *.bz2 call GZIP_write("bzip2")
-  autocmd FileAppendPre      *.gz call GZIP_appre("gunzip")
-  autocmd FileAppendPre      *.bz2 call GZIP_appre("bunzip2")
-  autocmd FileAppendPost    *.gz call GZIP_write("gzip")
-  autocmd FileAppendPost    *.bz2 call GZIP_write("bzip2")
-
-  " After reading compressed file: Uncompress text in buffer with "cmd"
-  fun! GZIP_read(cmd)
-    " set 'cmdheight' to two, to avoid the hit-return prompt
-    let ch_save = &ch
-    set ch=3
-    " when filtering the whole buffer, it will become empty
-    let empty = line("'[") == 1 && line("']") == line("$")
-    let tmp = tempname()
-    let tmpe = tmp . "." . expand("<afile>:e")
-    " write the just read lines to a temp file "'[,']w tmp.gz"
-    execute "'[,']w " . tmpe
-    " uncompress the temp file "!gunzip tmp.gz"
-    execute "!" . a:cmd . " " . tmpe
-    " delete the compressed lines
-    '[,']d
-    " read in the uncompressed lines "'[-1r tmp"
-    set nobin
-    execute "'[-1r " . tmp
-    " if buffer became empty, delete trailing blank line
-    if empty
-      normal Gdd''
-    endif
-    " delete the temp file
-    call delete(tmp)
-    let &ch = ch_save
-    " When uncompressed the whole buffer, do autocommands
-    if empty
-      execute ":doautocmd BufReadPost " . expand("%:r")
-    endif
-  endfun
-
-  " After writing compressed file: Compress written file with "cmd"
-  fun! GZIP_write(cmd)
-    if rename(expand("<afile>"), expand("<afile>:r")) == 0
-      execute "!" . a:cmd . " <afile>:r"
-    endif
-  endfun
-
-  " Before appending to compressed file: Uncompress file with "cmd"
-  fun! GZIP_appre(cmd)
-    execute "!" . a:cmd . " <afile>"
-    call rename(expand("<afile>:r"), expand("<afile>"))
-  endfun
-
- augroup END
-
- " This is disabled, because it changes the jumplist.  Can't use CTRL-O to go
- " back to positions in previous files more than once.
- if 0
-  " When editing a file, always jump to the last cursor position.
-  " This must be after the uncompress commands.
-   autocmd BufReadPost * if line("'\"") && line("'\"") <= line("$") | exe "normal `\"" | endif
- endif
+  augroup gzip
+    " Remove all gzip autocommands
+    au!
+    
+    " Enable editing of gzipped files
+    " set binary mode before reading the file
+    autocmd BufReadPre,FileReadPre  *.gz,*.bz2 set bin
+    autocmd BufReadPost,FileReadPost  *.gz call GZIP_read("gunzip")
+    autocmd BufReadPost,FileReadPost  *.bz2 call GZIP_read("bunzip2")
+    autocmd BufWritePost,FileWritePost  *.gz call GZIP_write("gzip")
+    autocmd BufWritePost,FileWritePost  *.bz2 call GZIP_write("bzip2")
+    autocmd FileAppendPre      *.gz call GZIP_appre("gunzip")
+    autocmd FileAppendPre      *.bz2 call GZIP_appre("bunzip2")
+    autocmd FileAppendPost    *.gz call GZIP_write("gzip")
+    autocmd FileAppendPost    *.bz2 call GZIP_write("bzip2")
+    
+    " After reading compressed file: Uncompress text in buffer with "cmd"
+    fun! GZIP_read(cmd)
+      " set 'cmdheight' to two, to avoid the hit-return prompt
+      let ch_save = &ch
+      set ch=3
+      " when filtering the whole buffer, it will become empty
+      let empty = line("'[") == 1 && line("']") == line("$")
+      let tmp = tempname()
+      let tmpe = tmp . "." . expand("<afile>:e")
+      " write the just read lines to a temp file "'[,']w tmp.gz"
+      execute "'[,']w " . tmpe
+      " uncompress the temp file "!gunzip tmp.gz"
+      execute "!" . a:cmd . " " . tmpe
+      " delete the compressed lines
+      '[,']d
+      " read in the uncompressed lines "'[-1r tmp"
+      set nobin
+      execute "'[-1r " . tmp
+      " if buffer became empty, delete trailing blank line
+      if empty
+        normal Gdd''
+      endif
+      " delete the temp file
+      call delete(tmp)
+      let &ch = ch_save
+      " When uncompressed the whole buffer, do autocommands
+      if empty
+        execute ":doautocmd BufReadPost " . expand("%:r")
+      endif
+    endfun
+    
+    " After writing compressed file: Compress written file with "cmd"
+    fun! GZIP_write(cmd)
+      if rename(expand("<afile>"), expand("<afile>:r")) == 0
+        execute "!" . a:cmd . " <afile>:r"
+      endif
+    endfun
+    
+    " Before appending to compressed file: Uncompress file with "cmd"
+    fun! GZIP_appre(cmd)
+      execute "!" . a:cmd . " <afile>"
+      call rename(expand("<afile>:r"), expand("<afile>"))
+    endfun
+ 
+  augroup END
+ 
+  " This is disabled, because it changes the jumplist.  Can't use CTRL-O to go
+  " back to positions in previous files more than once.
+  if 0
+    " When editing a file, always jump to the last cursor position.
+    " This must be after the uncompress commands.
+    autocmd BufReadPost * if line("'\"") && line("'\"") <= line("$") | exe "normal `\"" | endif
+  endif
 
 endif " has("autocmd")
 
@@ -212,26 +230,19 @@ function MyDiff()
   if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
   let arg3 = v:fname_out
   if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-  if &sh =~ '\<cmd'
-    silent execute '!""C:\Program Files\Vim\vim64\diff" ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . '"'
+  if has('win32')
+    if &sh =~ '\<cmd'
+      silent execute '!""C:\Program Files\Vim\vim64\diff" ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . '"'
+    else
+      silent execute '!C:\Program" Files\Vim\vim64\diff" ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+    endif
   else
-    silent execute '!C:\Program" Files\Vim\vim64\diff" ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+    silent execute '!diff ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
   endif
 endfunction
 
 
 call MyDefault()
-" Autocommands
-"-----------------------------------------------
-"autocmd BufEnter *.* setlocal indentexpr= 
-autocmd BufNewFile,BufEnter .vimrc call MyVimrc()
-autocmd BufNewFile,BufEnter *.xml call MyXML()
-autocmd BufNewFile,BufEnter *.java call MyJava()
-autocmd BufNewFile,BufEnter *.js call MyJavascript()
-autocmd BufNewFile,BufEnter *.py call MyPython()
-autocmd BufNewFile,BufEnter *.groovy call MyGroovy()
-autocmd BufNewFile,BufEnter *.gradle call MyGradle()
-autocmd BufNewFile,BufEnter *.proto call MyProtobuf()
 
 "set formatoptions=croql "default
 set formatoptions=ql "no auto start new line
@@ -243,12 +254,19 @@ let mapleader = ","
 nnoremap / /\v
 vnoremap / /\v
 set incsearch
+
+" Have the cursor briefly flash to a matching brace when one is inserted
 set showmatch
+
+" Switch on highlighting the last used search pattern.
 set hlsearch
+
+" clear highlighted matches
 nnoremap <leader><space> :noh<cr>
+
 nnoremap <tab> %
 vnoremap <tab> %
-set textwidth=79
+set textwidth=78
 
 " strip trailing whitespace in file
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
