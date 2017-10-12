@@ -24,6 +24,13 @@ It can be cloned directly into a system's `~/.vim` folder.
     $ git reset --hard origin/master
     // add or ignore the original files
 
+Plug-ins
+--------
+
+Plug-ins are installed using Tim Pope's [Pathogen][].
+I include some plugins as git submodules, so it's optional
+to install any of them.
+
 Windows
 -------
 
@@ -41,6 +48,6 @@ typically found at `%USERPROFILE%`
 
 
 
-
 [me]: http://github.com/radford-nguyen
+[Pathogen]: https://github.com/tpope/vim-pathogen
 
