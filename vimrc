@@ -56,14 +56,14 @@ endfunction
 
 function MyClojure()
   call MyTabs(2)
-	colorscheme slate
+  colorscheme slate
   setfiletype clojure
   map <F12> <ESC>0i;;<ESC>j
 endfunction
 
 function MyGroovy()
   call MyTabs(4)
-	colorscheme slate
+  colorscheme slate
   map <F12> <ESC>0i//<ESC>j
 endfunction
 
@@ -74,7 +74,7 @@ endfunction
 
 function MyProtobuf()
   call MyTabs(4)
-	colorscheme slate
+  colorscheme slate
   set ts=3 sw=3 et
   setfiletype cpp
 endfunction
@@ -82,7 +82,7 @@ endfunction
 function MyDefault()
   call MyTabs(2)
   set hlsearch is backspace=indent,eol,start
-	colorscheme slate
+  colorscheme slate
 endfunction
 
 function MyJava()
@@ -90,12 +90,12 @@ function MyJava()
   map <F12> <ESC>0i//<ESC>j
   map <F4> <ESC>O<ESC>i//-----------------------------------------------------------------------------<ESC>
   let java_allow_cpp_keywords=0
-	colorscheme slate
+  colorscheme slate
 endfunction
 
 function MyJavascript()
   call MyTabs(2)
-	colorscheme slate
+  colorscheme slate
   set syntax=javascript
   let java_allow_cpp_keywords=0
 endfunction
@@ -104,35 +104,39 @@ function MyPython()
   call MyTabs(2)
   map <F12> <ESC>0i#<ESC>j
   map <F4> <ESC>O<ESC>i#==============================================================================<ESC>
-	colorscheme slate
+  colorscheme slate
 endfunction
 
 function MyXML()
   call MyTabs(2)
-	colorscheme slate
+  colorscheme slate
 endfunction
 
 function MyVimrc()
   call MyTabs(2)
 endfunction
 
+function YankFilename()
+  let @" = expand("%")
+endfunction
+
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
-	" Autocommands
-	"-----------------------------------------------
-	"autocmd BufEnter *.* setlocal indentexpr= 
-	autocmd BufNewFile,BufEnter .vimrc call MyVimrc()
-	autocmd BufNewFile,BufEnter *.xml call MyXML()
-	autocmd BufNewFile,BufEnter *.java call MyJava()
-	autocmd BufNewFile,BufEnter *.js call MyJavascript()
-	autocmd BufNewFile,BufEnter *.py call MyPython()
-	autocmd BufNewFile,BufEnter *.groovy call MyGroovy()
-	autocmd BufNewFile,BufEnter *.gradle call MyGradle()
-	autocmd BufNewFile,BufEnter *.proto call MyProtobuf()
+  " Autocommands
+  "-----------------------------------------------
+  "autocmd BufEnter *.* setlocal indentexpr= 
+  autocmd BufNewFile,BufEnter .vimrc call MyVimrc()
+  autocmd BufNewFile,BufEnter *.xml call MyXML()
+  autocmd BufNewFile,BufEnter *.java call MyJava()
+  autocmd BufNewFile,BufEnter *.js call MyJavascript()
+  autocmd BufNewFile,BufEnter *.py call MyPython()
+  autocmd BufNewFile,BufEnter *.groovy call MyGroovy()
+  autocmd BufNewFile,BufEnter *.gradle call MyGradle()
+  autocmd BufNewFile,BufEnter *.proto call MyProtobuf()
 
-  " In text files, always limit the width of text to 78 characters
-  autocmd BufRead *.* set tw=78
+  " In text files, always limit the width of text
+  autocmd BufRead *.* set tw=100
   
   augroup cprog
     " Remove all cprog autocommands
@@ -266,7 +270,7 @@ nnoremap <leader><space> :noh<cr>
 
 nnoremap <tab> %
 vnoremap <tab> %
-set textwidth=78
+set textwidth=100
 
 " strip trailing whitespace in file
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
@@ -274,5 +278,7 @@ nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
 
 "set formatoptions=croql "default
 set formatoptions=ql "no auto start new line
+
+nnoremap <leader><b> :buffers<cr>
 
 execute pathogen#infect()
