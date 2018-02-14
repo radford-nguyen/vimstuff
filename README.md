@@ -38,13 +38,16 @@ On windoze, the gvim installation typically expects a
 folder `vimfiles` instead of `.vim`.  The `vimrc` in this
 repo changes that location to `.vim` for you, but you must
 still source that `vimrc` because the installation still
-expects to use `~/.vimrc`. Add this line to the
+expects to use `%HOME%/_vimrc`. Add this line to the
 top of that file:
 
-    source ~/vimrc
+    source $HOME/.vim/vimrc
 
-where `~` needs to expand to the Windows user directory,
-typically found at `%USERPROFILE%`
+assuming that `$HOME` on your system is set appropriately.
+(Otherwise, try the Windows user directory,
+typically found at `%USERPROFILE%`)
+
+> _vimrc is sometimes name .vimrc, depending on the install
 
 
 
