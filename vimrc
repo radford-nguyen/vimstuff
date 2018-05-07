@@ -9,14 +9,13 @@
 "  for MS-DOS and Win32:  $VIM\_vimrc
 "      for OpenVMS:  sys$login:.vimrc
 
-" Use Vim settings, rather then Vi settings (much better!).
-" This must be first, because it changes other options as a side effect.
-
 if has('win32')
   " use `.vim` instead of `vimfiles`
   set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
 endif
 
+" Technically since this is a user vimrc then this option
+" is already set, but better safe than sorry
 set nocompatible
 
 colorscheme slate

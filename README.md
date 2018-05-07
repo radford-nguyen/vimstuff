@@ -14,7 +14,7 @@ It can be cloned directly into a system's `~/.vim` folder.
     $ cd ~/.vim
     $ git clone <this_repo> .
 
-#### With Shenanigans
+#### Shenanigans
 
     $ mkdir -p ~/.vim
     $ cd ~/.vim
