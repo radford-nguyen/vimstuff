@@ -116,10 +116,6 @@ function MyVimrc()
   call MyTabs(2)
 endfunction
 
-function YankFilename()
-  let @" = expand("%")
-endfunction
-
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
@@ -275,6 +271,12 @@ set textwidth=100
 " strip trailing whitespace in file
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
 
+nnoremap <leader>f :let @" = expand("%")<CR>
+
+" word wrapping
+nnoremap <leader>q ciw'<c-r>"'<esc>
+nnoremap <leader>Q ciw"<c-r>""<esc>
+nnoremap <leader>p ciw(<c-r>")<esc>
 
 "set formatoptions=croql "default
 set formatoptions=ql "no auto start new line
