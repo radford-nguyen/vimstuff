@@ -1,4 +1,6 @@
-*~
-*.swp
-.netrwhist
+*
+!syntax
+!autoload
+!bundle
+!vimrc
 
