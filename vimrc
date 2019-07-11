@@ -74,8 +74,13 @@ endfunction
 function MyProtobuf()
   call MyTabs(4)
   colorscheme slate
-  set ts=3 sw=3 et
   setfiletype cpp
+endfunction
+
+function MyThrift()
+  call MyTabs(2)
+  colorscheme slate
+  setfiletype thrift
 endfunction
 
 function MyDefault()
@@ -129,6 +134,7 @@ if has("autocmd")
   autocmd BufNewFile,BufEnter *.groovy call MyGroovy()
   autocmd BufNewFile,BufEnter *.gradle call MyGradle()
   autocmd BufNewFile,BufEnter *.proto call MyProtobuf()
+  autocmd BufNewFile,BufEnter *.thrift call MyThrift()
 
   " In text files, always limit the width of text
   autocmd BufRead *.* set tw=100
