@@ -1,6 +1,12 @@
+# ignore everything
 *
-!syntax
-!autoload
-!bundle
+# but descend into directories
+!*/
+# recursively allow files under these dirs
+!/syntax/**
+!/autoload/**
+!/bundle/**
 !vimrc
-
+# but ignore these files globally
+*~
+*.swp
