@@ -7,3 +7,6 @@
 [submodule "bundle/ceylon-vim"]
 	path = bundle/ceylon-vim
 	url = https://github.com/chochos/ceylon-vim.git
+[submodule "bundle/vim-ps1"]
+	path = bundle/vim-ps1
+	url = https://github.com/PProvost/vim-ps1.git
