@@ -269,6 +269,10 @@ set hlsearch
 " clear highlighted matches
 nnoremap <leader><space> :noh<cr>
 
+" format json
+nnoremap <leader>j :'<,'>!python -m json.tool<cr>
+vnoremap <leader>j :'<,'>!python -m json.tool<cr>
+
 nnoremap <tab> %
 vnoremap <tab> %
 set textwidth=100
