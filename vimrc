@@ -331,4 +331,25 @@ function ToggleHex()
   let &modifiable=l:oldmodifiable
 endfunction
 
+
+" set cursor types:
+" 1 or 0 -> blinking block
+" 2 -> solid block
+" 3 -> blinking underscore
+" 4 -> solid underscore
+" Recent versions of xterm (282 or above) also support
+" 5 -> blinking vertical bar
+" 6 -> solid vertical bar
+if &term =~ '^xterm'
+  " use | in insert mode
+  let &t_SI .= "\<Esc>[6 q"
+
+  " block otherwise
+  let &t_EI .= "\<Esc>[2 q"
+
+  " reset cursor on exit
+  " (codes same as above, e.g. 4 q -> 34 q)
+  autocmd VimLeave * silent !echo -ne "\x1b[\x33 q"
+endif
+
 execute pathogen#infect()
